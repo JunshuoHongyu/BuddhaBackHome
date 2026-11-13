@@ -10,9 +10,9 @@ serializedProperty:
     __class: Map
     JSClassName: !<str> Mp4TextureProvider
     loopCount: 1
-    videoAsset: {localId: 1, path: a89e800c-29b4-2bbc-e93d-85b7a37ca17f--a89e800c-29b4-2bbc-e93d-85b7a37ca17f.video}
-width: 640
-height: 1136
+    videoAsset: {localId: 1, path: 54fb0aca-d1c2-f106-4ec9-b0b95143aa1a--54fb0aca-d1c2-f106-4ec9-b0b95143aa1a.video}
+width: 1080
+height: 1920
 depth: 0
 internalFormat:
   __class: InternalFormat

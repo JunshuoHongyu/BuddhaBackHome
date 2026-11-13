@@ -693,8 +693,8 @@ entities:
             autoPlay: false
             enableVEEditControlMusic: true
             externallyControlled: false
-            isMobilePreview: false
-            playMode: !<str> Once
+            isMobilePreview: true
+            playMode: !<str> Infinity
             resourcePath: !<str> audio/9e1d1a25-5b41-ce1b-f320-c30299a7d24f.mp3
             serializedLoopCount: 1
             serializedVolume: 70
@@ -706,7 +706,7 @@ config:
   __class: Map
 msaa:
   __class: MSAAMode
-  value: _4X
+  value: NONE
 jsScriptSystems:
   - !<str> js/AmazingProRuntime.js
   - !<str> js/Graph/GraphSystem.js

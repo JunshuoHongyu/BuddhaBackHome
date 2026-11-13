@@ -1,7 +1,7 @@
 [
   {
     "guid": {
-      "a": "a89e800c-29b4-2bbc-e93d-85b7a37ca17f",
+      "a": "54fb0aca-d1c2-f106-4ec9-b0b95143aa1a",
       "b": ""
     },
     "extraType": "ResItemMP4",
@@ -15,14 +15,14 @@
       "expandInPanel": false
     },
     "alphaBlend": false,
-    "videoFileMD5": "d0a4452006cc1f1acc63dd4afd109e77",
-    "compressionType": 2,
+    "videoFileMD5": "475802932475ffde75d9a9b0be7ea568",
+    "compressionType": 1,
     "compressQuality": 0,
     "compressMaxResolution": 8192,
     "allowHighResolution": true,
     "forceH264Transcode": false,
     "objGuid": "",
-    "resourceFilePath": "C:\\Users\\ywx1551497\\Downloads\\a5693608-6071-4a0d-85fb-e2fa684489c8.mp4",
+    "resourceFilePath": "C:\\Users\\ywx1551497\\Downloads\\HnVideoEditor_2026_11_13_234851351.mp4",
     "references": []
   }
 ]
