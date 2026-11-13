@@ -161,8 +161,8 @@
    "asset": "Assets/bgm_namaste.mp3（AudioAsset GUID 9e1d1a25-5b41-ce1b-f320-c30299a7d24f）",
    "host": "场景实体「BgmPlayer」（GUID bcc0f05b-967d-e815-de15-2dde79500f9a，挂在「2D 相机」下，Audio Player 内置对象自动生成的 AudioComponent）",
    "component": "AudioComponent（GUID 2f8308d6-5c68-249a-7c9d-f07bde6c5ca2）：playMode=INFINITE 循环、volume=70、autoPlay=false",
-   "trigger": "合十触发 startFilm() 末尾调 playBgm() → bgm.play()（以 isFinished 守卫，避免循环途中重播）；回待机 enterIdle() 末尾调 stopBgm() → bgm.stop()",
-   "binding": "脚本 bindAudio() 通过 host.getChild(\"BgmPlayer\").getComponent(\"AudioComponent\") 取组件缓存到 bgm 字段；组件缺失时置 null 并打日志，不影响主流程",
+   "trigger": "合十触发 startEffect() 末尾调 playBgm() → AudioComponent.play()（以 isPlaying 守卫，避免循环途中重播）；回待机 enterIdle() 开头调 stopBgm() → AudioComponent.stop()",
+   "binding": "脚本 bindAudio() 通过 findObject(\"BgmPlayer\") 全场景遍历取实体 → getComponent(\"AudioComponent\") 缓存到 this.bgm；组件缺失时置 null 并打日志，不影响主流程",
    "copyright": "发布前须确认音频商用授权与抖音音乐版权合规"
   }
  },

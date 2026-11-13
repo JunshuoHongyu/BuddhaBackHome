@@ -41,6 +41,9 @@ var CFG = {
   IDLE_BG_OPACITY: 0.35,
   ACCEPT_SIMILAR: true,        // 兼容 Beg(作揖)/Pray(祈祷) 等合掌类手势
   ALLOW_TAP_FALLBACK: false,   // ★ 严格模式：点屏不能代替合十
+  SUTRA_SPIN: 1.1,             // 经文隧道旋转角速度 rad/s（漩涡 + 中心经文字作为同一单位一起转）
+  BGM_NAME: 'bgm_namaste',     // 全局播放接口 Amaz.Audio.play() 的兜底资源名（优先用组件对象 play()）
+  BGM_VOL: 70,                 // 背景音乐音量（与场景 AudioComponent.serializedVolume 保持一致）
   DEBUG_LOG: true
 };
 
@@ -80,6 +83,9 @@ function FoShouNamasteController() {
   this.acceptedComplete = false;
   this.disabled = false;       // 已有同类控制器时置 true，避免双重控制
   this.fromGraph = false;      // 是否由可视化脚本节点兜底启动
+  this.sutraAngle = 0;         // 经文隧道累计旋转角（rad），由脚本驱动，保证漩涡与中心字同转
+  this.bgm = null;             // 背景音乐 AudioComponent 缓存（来自实体 BgmPlayer）
+  this.bgmBound = false;       // 是否已尝试绑定 BgmPlayer
 }
 
 FoShouNamasteController.prototype.log = function (msg) {
@@ -173,6 +179,121 @@ FoShouNamasteController.prototype.setOpacity = function (key, v) {
   var img = this.comps[key];
   if (!img) return;
   try { img.opacity = v; } catch (e) { /* 忽略 */ }
+};
+
+/* -------------------------------------------------------------------------
+ * 背景音乐：场景实体「BgmPlayer」挂了 AudioComponent（audioType=Bgm，
+ * playMode=Infinity 循环，autoPlay=false），资源为 Assets/bgm_namaste.mp3。
+ * 因为 autoPlay=false 且此前实际挂载的控制器从未调用 play()，所以预览不响。
+ * 这里在合十触发主片时 bindAudio() 取组件并 playBgm()；回待机 stopBgm()。
+ * 兼容像塑 / 抖音特效引擎 AudioComponent 实例 API：play()/resume()/stop()/pause()，
+ * 并加 isPlaying 守卫，避免循环播放途中被重复 play 造成叠音。
+ * ---------------------------------------------------------------------- */
+FoShouNamasteController.prototype.bindAudio = function () {
+  if (this.bgmBound) return this.bgm;
+  this.bgmBound = true;
+  var host = this.findObject('BgmPlayer');
+  if (!host) { this.log('BGM: BgmPlayer entity not found'); return null; }
+  var comp = null;
+  try {
+    comp = host.getComponent('AudioComponent') ||
+           host.getComponent('AudioSource') ||
+           host.getComponent('Sound') || null;
+  } catch (e) { comp = null; }
+  if (!comp) {
+    // 极少数结构下音频组件挂在 BgmPlayer 的父实体上
+    var parent = null;
+    try { parent = host.getParent ? host.getParent() : (host.parent || null); } catch (e) { parent = null; }
+    if (parent) {
+      try { comp = parent.getComponent('AudioComponent') || null; } catch (e) { comp = null; }
+    }
+  }
+  this.bgm = comp;
+  if (!comp) this.log('BGM: AudioComponent missing (autoPlay=false 且无脚本接管)');
+  else this.log('BGM: AudioComponent bound ok');
+  return comp;
+};
+
+FoShouNamasteController.prototype.playBgm = function () {
+  var bgm = this.bgm || this.bindAudio();
+  if (!bgm) {
+    // 兜底：全局音频接口（资源名以文件名基名传入；组件路径优先，此处仅最后尝试）
+    try {
+      if (Amaz && Amaz.Audio && Amaz.Audio.play) {
+        Amaz.Audio.play(CFG.BGM_NAME);
+        this.log('BGM: played via Amaz.Audio.play(' + CFG.BGM_NAME + ')');
+      }
+    } catch (e) { this.log('BGM: no playable component (' + e + ')'); }
+    return;
+  }
+  // isPlaying 守卫：循环播放途中不重播，避免叠音
+  var playing = false;
+  try {
+    if (typeof bgm.isPlaying === 'function') playing = !!bgm.isPlaying();
+    else if (bgm.isPlaying !== undefined) playing = !!bgm.isPlaying;
+  } catch (e) { playing = false; }
+  if (playing) return;
+  try {
+    if (typeof bgm.setVolume === 'function' && CFG.BGM_VOL != null) {
+      try { bgm.setVolume(CFG.BGM_VOL); } catch (e) { /* 忽略 */ }
+    }
+    if (typeof bgm.play === 'function') { bgm.play(); this.log('BGM: play()'); return; }
+    if (typeof bgm.resume === 'function') { bgm.resume(); this.log('BGM: resume()'); return; }
+  } catch (e) { this.log('BGM: play failed (' + e + ')'); }
+};
+
+FoShouNamasteController.prototype.stopBgm = function () {
+  var bgm = this.bgm;
+  if (!bgm) return;
+  try {
+    if (typeof bgm.stop === 'function') bgm.stop();
+    else if (typeof bgm.pause === 'function') bgm.pause();
+    this.log('BGM: stop()');
+  } catch (e) { /* 停止失败不影响主流程 */ }
+};
+
+/* -------------------------------------------------------------------------
+ * 经文隧道旋转：让整条隧道实体（漩涡贴图 + 中心经文字）作为同一旋转单位一起转。
+ * 关键前提（编辑器侧）：
+ *   1) 中心经文字必须【挂为 10_经文隧道叠加 的子级】（或与其共享同一个旋转父级），
+ *      这样它才会继承本函数驱动的旋转；否则它仍是独立对象，不会跟着转。
+ *   2) 不要再给漩涡单独挂旋转动画（AnimSequence / 关键帧），否则会与脚本叠加成双重加速。
+ * 这样「漩涡转、中心字不转」的错位就被消除——二者始终同步。
+ * ---------------------------------------------------------------------- */
+FoShouNamasteController.prototype._sutraTransform = function () {
+  var ent = this.entities[L.SUTRA];
+  if (!ent) return null;
+  var tf = null;
+  try {
+    tf = ent.transform ||
+         (ent.getComponent && (ent.getComponent('Transform') || ent.getComponent('ScreenTransform')));
+  } catch (e) { tf = null; }
+  return tf;
+};
+
+FoShouNamasteController.prototype.rotateSutra = function (dt) {
+  var tf = this._sutraTransform();
+  if (!tf) return;
+  if (this.sutraAngle === undefined) this.sutraAngle = 0;
+  this.sutraAngle += dt * CFG.SUTRA_SPIN;
+  var a = this.sutraAngle;
+  var half = a * 0.5;
+  var q = { w: Math.cos(half), x: 0, y: 0, z: Math.sin(half) };   // 绕 Z 轴旋转四元数
+  var done = false;
+  try { if (tf.setLocalOrientation) { tf.setLocalOrientation(q); done = true; } } catch (e) {}
+  if (!done) { try { tf.localOrientation = q; done = true; } catch (e) {} }
+  if (!done) { try { if (tf.setRotation) { tf.setRotation(a); done = true; } } catch (e) {} }
+  if (!done) { try { tf.rotation = a * 180 / Math.PI; done = true; } catch (e) {} }
+  if (!done) { try { if (tf.setEulerAngle) { tf.setEulerAngle(0, 0, a * 180 / Math.PI); done = true; } } catch (e) {} }
+  if (!done) { try { tf.eulerAngles = { x: 0, y: 0, z: a * 180 / Math.PI }; done = true; } catch (e) {} }
+};
+
+FoShouNamasteController.prototype.resetSutraRotation = function () {
+  this.sutraAngle = 0;
+  var tf = this._sutraTransform();
+  if (!tf) return;
+  var q = { w: 1, x: 0, y: 0, z: 0 };
+  try { if (tf.setLocalOrientation) tf.setLocalOrientation(q); else tf.localOrientation = q; } catch (e) {}
 };
 
 /* -------------------------------------------------------------------------
@@ -337,6 +458,7 @@ FoShouNamasteController.prototype.onStart = function () {
     g.__FoShouNamaste = { instance: this, fromGraph: !!this.fromGraph };
   } catch (e) { /* 全局标记不可用不影响单实例运行 */ }
   this.bindLayers();
+  this.bindAudio();            // 绑定 BgmPlayer 的 AudioComponent，合十触发时由 playBgm() 启动
   this.enterIdle();
   this.log('onStart state=idle (waiting for Namaste)');
 };
@@ -346,6 +468,7 @@ FoShouNamasteController.prototype.enterIdle = function () {
   this.elapsed = 0;
   this.hold = 0;
   this.hintTime = 0;
+  this.stopBgm();              // 回待机：停止背景音乐（首次 onStart 时尚未播放，stop 无害）
 
   // ★ 没合十就一直提示：引导文案 + 合十引导框常驻
   this.setVisible(L.GUIDE, true);
@@ -422,6 +545,7 @@ FoShouNamasteController.prototype.startEffect = function () {
   // 摄像头底图任何阶段都不关
   this.setVisible(L.CAM, true);
   this.setOpacity(L.CAM, 1.0);
+  this.playBgm();              // 合十触发主片：启动背景音乐（循环播放，isPlaying 守卫避免重播）
   this.log('[state] idle -> playing (Namaste held ' + CFG.HOLD_REQUIRED + 's)');
 };
 
@@ -447,6 +571,7 @@ FoShouNamasteController.prototype.onUpdate = function (dt) {
     this.setVisible(L.CAM, true);
     this.setVisible(L.MAIN, false);
     this.setOpacity(L.BG, CFG.IDLE_BG_OPACITY);
+    this.resetSutraRotation();   // 待机时隧道隐藏，旋转归零，下次出现从 0 开始
     this.setOpacity(L.BOX, gesture ? 1.0 : breath);
     this.setOpacity(L.GUIDE, gesture ? 1.0 : 0.86 + 0.14 * breath);
     this.setVisible(L.WHEEL, gesture);
@@ -461,7 +586,9 @@ FoShouNamasteController.prototype.onUpdate = function (dt) {
 
     this.setVisible(L.WHEEL, t < 1.2);
     this.setVisible(L.FLASH, t >= 0.9 && t < 1.35);
-    this.setVisible(L.SUTRA, t >= 4.0 && t < 8.5);
+    var sutraOn = (t >= 4.0 && t < 8.5);
+    this.setVisible(L.SUTRA, sutraOn);
+    if (sutraOn) this.rotateSutra(dt); else this.resetSutraRotation();
     this.setVisible(L.HALO, t >= 12.5);
     this.setVisible(L.TITLE, t >= 12.5);
     this.setVisible(L.SUB, t >= 12.5);
@@ -479,6 +606,7 @@ FoShouNamasteController.prototype.onUpdate = function (dt) {
       [L.WHEEL, L.FLASH, L.SUTRA].forEach(function (n) {
         this.setVisible(n, false);
       }, this);
+      this.resetSutraRotation();
       // 结尾定格，并把合十提示再次放出来，等待下一次合十重播
       this.setVisible(L.GUIDE, true);
       this.setVisible(L.BOX, true);

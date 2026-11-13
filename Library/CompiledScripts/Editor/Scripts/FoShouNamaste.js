@@ -23,12 +23,12 @@ const {
  *   1. 未合十：显示 02 引导文案 / 03 合十金手 / 05 四角星光 / 11 石窟氛围 / 13 摄像头人像；
  *   2. 双手合十保持 0.6 秒：收起提示并**关闭 13 层人像（不再显示摄像头画面）**，
  *      20 秒主片（01 层 MP4 视频纹理）从头播放，整屏只展示特效影片；
- *      同时播放背景音乐（子物体「BgmPlayer」AudioComponent，playMode=INFINITE 循环），
- *      回到待机时停止；
+ *      同时播放背景音乐（子物体「BgmPlayer」AudioComponent，playMode=Once 一次性播放，不循环），
+ *      回到待机时停止（一次性播放完成即终态，不再返回待机）；
  *      时间轴与结束判定以播放器真实状态为准（currentTime/loopCompleted），
  *      脚本累计时钟仅作 25s 兜底超时；
- *   3. 20 秒结束：定格特效画面约 3.5 秒，然后回到待机——此时才重新打开
- *      13 层实时人像，引导文案与金手再次出现，可再次合十重播。
+ *   3. 20 秒结束：定格在最后画面（佛首头光 + 结尾主标题），一次性播放完成；
+ *      不再回到待机，不再重新打开 13 层实时人像，也不响应再次合十重播。
  *
  * 手势数据：APJS.AlgorithmManager.getResult()
  *           → getHand2DCount() / getHand2DInfo(i).action
@@ -68,8 +68,19 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         this.imgCam = null;
         /** 主片 Mp4TextureProvider 控制器（restartFilm 时缓存，供读取真实播放进度） */
         this.filmCtl = null;
-        /** 背景音乐播放器组件（挂在子物体「BgmPlayer」上；playMode=INFINITE 由场景 DSL 设定） */
+        /** 背景音乐播放器组件（挂在实体「BgmPlayer」上；playMode=INFINITE 由场景 DSL 设定） */
         this.bgm = null;
+        /** 本地播放状态标志：避免循环播放途中被重复 play() 从头重播（像塑 AudioComponent 无 isPlaying，用本地跟踪） */
+        this.bgmPlaying = false;
+        /** BGM 自计时（秒），用于播完第一遍后硬停兜底，避免 playMode 被回退成循环而续播 */
+        this.bgmElapsed = 0;
+        /** 经文隧道实体（整实体刚体旋转，漩涡+金字一起转） */
+        this.sutraObj = null;
+        /** 经文隧道累计旋转角（rad），由脚本每帧驱动，保证漩涡与金字同步旋转 */
+        this.sutraAngle = 0;
+        /** 主片视频延后启动标记（声画对齐：BGM 先起，视频晚 BGM_LEAD_SEC 再播） */
+        this.videoPending = false;
+        this.videoDelay = 0;
     }
     // ---- 生命周期 ---------------------------------------------------------------
     onStart() {
@@ -122,6 +133,15 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         }
         if (this.state === FoShouNamaste_1.PLAYING) {
             this.elapsed += dt;
+            // 主片延后启动：先让 BGM 跑起来，视频晚 BGM_LEAD_SEC 再开始，使声画对齐
+            if (this.videoPending) {
+                this.videoDelay -= dt;
+                if (this.videoDelay <= 0) {
+                    this.restartFilm();
+                    this.videoPending = false;
+                    this.log("film restarted (aligned with bgm)");
+                }
+            }
             // 时间轴优先用播放器自身时钟（引擎按真实 delta 累计，不受脚本 dt 截顶影响），
             // 播放器不可读时退回脚本累计时钟。
             let t = this.filmTime();
@@ -129,11 +149,21 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
                 t = this.elapsed;
             this.show(this.imgWheel, t < 1.2);
             this.show(this.imgFlash, t >= 0.9 && t < 1.35);
-            this.show(this.imgSutra, t >= 4.0 && t < 8.5);
+            const sutraOn = t >= 4.0 && t < 8.5;
+            this.show(this.imgSutra, sutraOn);
+            // 经文隧道：整实体刚体旋转（漩涡+贴图里的金字一起转）；窗口外归零，下次从 0 开始
+            if (sutraOn)
+                this.rotateSutra(dt);
+            else
+                this.resetSutraRotation();
             this.show(this.imgHalo, t >= 12.5);
             this.show(this.imgTitle, t >= 12.5);
             // 触发后不再显示摄像头人像，整屏只有特效影片
             this.show(this.imgCam, false);
+            // 一次性保障：自计时累计 BGM 播放时长，播完第一遍即强制 stop，
+            // 即便场景 playMode 被回退成循环，也不会「播完又从头续播」导致播完后仍有音乐。
+            this.bgmElapsed += dt;
+            this.stopBgmIfFinished();
             // 结束判据：播放器真实状态（loop 完成或 currentTime 到 duration），
             // 兜底：累计时钟超过 DURATION_TIMEOUT（低帧率下 elapsed 慢于真实时间）。
             if (this.filmFinished() || this.elapsed >= FoShouNamaste_1.DURATION_TIMEOUT) {
@@ -143,17 +173,9 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
             }
             return;
         }
-        // 结尾定格：先停在特效画面上，短暂停留后回到待机，恢复实时人像
+        // 一次性播放：进入终态后定格在最后画面，不再回到待机，也不响应再次合十重播
         this.endTime += dt;
-        this.show(this.imgGuide, true);
-        this.show(this.imgBox, true);
-        this.show(this.imgCam, false);
-        if (this.endTime >= FoShouNamaste_1.END_HOLD) {
-            this.enterIdle();
-            return;
-        }
-        if (this.armed && this.hold >= FoShouNamaste_1.HOLD_REQUIRED)
-            this.startFilm();
+        return;
     }
     onDestroy() {
         this.log("onDestroy");
@@ -161,6 +183,16 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
     // ---- 绑定 ------------------------------------------------------------------
     log(msg) {
         console.log("[FoShouNamaste] " + msg);
+    }
+    /** 全局查找实体（SceneObject），用于需要对整实体做 transform 变换的场景（如隧道旋转）。 */
+    findObject(name) {
+        try {
+            const scene = this.getSceneObject().scene;
+            if (scene && scene.findSceneObject)
+                return scene.findSceneObject(name);
+        }
+        catch (e) { }
+        return null;
     }
     findLayer(name) {
         try {
@@ -201,6 +233,7 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         this.imgHalo = this.findLayer(FoShouNamaste_1.N_HALO);
         this.imgTitle = this.findLayer(FoShouNamaste_1.N_TITLE);
         this.imgSutra = this.findLayer(FoShouNamaste_1.N_SUTRA);
+        this.sutraObj = this.findObject(FoShouNamaste_1.N_SUTRA);
         this.imgBg = this.findLayer(FoShouNamaste_1.N_BG);
         this.imgCam = this.findLayer(FoShouNamaste_1.N_CAM);
         this.bindAudio();
@@ -210,13 +243,25 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         else
             this.log("main film layer NOT found: " + FoShouNamaste_1.N_MAIN);
     }
-    /** 绑定背景音乐：子物体「BgmPlayer」上的 AudioComponent（场景已设 playMode=INFINITE、volume=70、autoPlay=false）。 */
+    /** 绑定背景音乐：子物体「BgmPlayer」上的 AudioComponent（场景已设 playMode=Once、volume=70、autoPlay=false）。 */
     bindAudio() {
         try {
-            const host = this.getSceneObject();
-            const player = host.getChild ? host.getChild("BgmPlayer") : null;
+            // 全局场景查找：BgmPlayer 是根场景下与「2D 相机」同级的实体，并非脚本宿主直接子物体，
+            // 用 getChild 永远拿不到；改用 scene.findSceneObject 全局查找（与 findLayer 一致）。
+            let player = null;
+            try {
+                const scene = this.getSceneObject().scene;
+                if (scene && scene.findSceneObject)
+                    player = scene.findSceneObject("BgmPlayer");
+            }
+            catch (e) {
+                player = null;
+            }
+            if (!player && this.getSceneObject().getChild) {
+                player = this.getSceneObject().getChild("BgmPlayer");
+            }
             if (!player) {
-                this.log("bgm: BgmPlayer child not found");
+                this.log("bgm: BgmPlayer NOT found in scene");
                 this.bgm = null;
                 return;
             }
@@ -233,7 +278,7 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
                     this.bgm.volume = 70;
                 }
                 catch (e) { }
-                this.log("bgm: AudioComponent bound (playMode=INFINITE, volume=70)");
+                this.log("bgm: AudioComponent bound (playMode=Once, volume=70)");
             }
             else {
                 this.log("bgm: AudioComponent NOT found on BgmPlayer");
@@ -243,6 +288,51 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
             this.bgm = null;
             this.log("bindAudio failed: " + e);
         }
+    }
+    /**
+     * 经文隧道整实体旋转：把 `10_经文隧道叠加` 整个对象（漩涡贴图 + 其中烤入的金字）作为刚体，
+     * 绕屏幕法线(Z)轴每帧旋转 SUTRA_SPIN*dt，确保金字与漩涡同步转动。
+     * 取四元数优先用 APJS.Quaternionf.makeFromEulerAngles，缺失时退化到手写单位四元数。
+     */
+    rotateSutra(dt) {
+        if (!this.sutraObj || !this.sutraObj.getTransform)
+            return;
+        this.sutraAngle += FoShouNamaste_1.SUTRA_SPIN * dt;
+        const a = this.sutraAngle;
+        let q = null;
+        try {
+            const APJSAny = APJS;
+            if (APJSAny && APJSAny.Quaternionf && APJSAny.Vector3f) {
+                q = APJSAny.Quaternionf.makeFromEulerAngles(new APJSAny.Vector3f(0, 0, a));
+            }
+        }
+        catch (e) {
+            q = null;
+        }
+        if (!q)
+            q = { x: 0, y: 0, z: Math.sin(a / 2), w: Math.cos(a / 2) };
+        try {
+            const tr = this.sutraObj.getTransform();
+            if (tr && tr.localRotation !== undefined)
+                tr.localRotation = q;
+        }
+        catch (e) {
+            this.log("[sutra] rotate failed: " + e);
+        }
+    }
+    /** 隧道隐藏时把旋转角归零并复位到单位朝向，下次出现从 0 开始。 */
+    resetSutraRotation() {
+        if (this.sutraAngle === 0)
+            return;
+        this.sutraAngle = 0;
+        if (!this.sutraObj || !this.sutraObj.getTransform)
+            return;
+        try {
+            const tr = this.sutraObj.getTransform();
+            if (tr && tr.localRotation !== undefined)
+                tr.localRotation = { x: 0, y: 0, z: 0, w: 1 };
+        }
+        catch (e) { }
     }
     show(img, on) {
         if (!img)
@@ -291,6 +381,9 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         this.alpha(this.imgBox, 1.0);
         this.alpha(this.imgBg, FoShouNamaste_1.IDLE_BG_OPACITY);
         this.alpha(this.imgCam, 1.0);
+        this.resetSutraRotation();
+        this.videoPending = false;
+        this.videoDelay = 0;
         this.stopBgm();
         this.log("state=idle (waiting for Namaste)");
     }
@@ -310,23 +403,47 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         this.show(this.imgSutra, false);
         this.show(this.imgHalo, false);
         this.show(this.imgTitle, false);
-        this.show(this.imgMain, true);
+        // 主片图层延迟到 restartFilm（视频真正开播）时才显示，避免延迟期间提前露头造成「画面比音乐快」
+        this.show(this.imgMain, false);
         this.alpha(this.imgMain, 1.0);
-        this.restartFilm();
+        // 声画对齐：BGM 先起，主片视频延后 BGM_LEAD_SEC 再 restart，抵消音频线程启动延迟，
+        // 使音乐与画面第 0 帧对齐（视频现 17s，延后量极小不影响时间轴）。
         this.playBgm();
-        this.log("state -> playing (Namaste detected, camera portrait hidden)");
+        this.filmCtl = null; // 延迟期间清空旧引用，避免 filmFinished 误判已播完
+        this.videoPending = true;
+        this.videoDelay = FoShouNamaste_1.BGM_LEAD_SEC;
+        this.log("state -> playing (Namaste detected, camera hidden, bgm started, film pending " + this.videoDelay + "s)");
     }
-    /** 播放背景音乐：仅当当前未处于播放中（isFinished 为真）才调用 play()，避免循环途中重复触发导致重头播放。 */
+    /**
+     * 播放背景音乐：playMode=INFINITE 循环下 isFinished 永远是 false，
+     * 拿它当「该不该 play」的判据会导致 play() 永不被调用（旧实现的 bug）。
+     * 改本地标志 bgmPlaying 守卫：未播放才 play，避免每帧/重复触发从头重播。
+     */
     playBgm() {
         if (!this.bgm) {
             this.log("[audio] missing channel=bgm");
             return;
         }
+        if (this.bgmPlaying)
+            return; // 已在循环播放中，不重复 play
         try {
-            if (this.bgm.isFinished) {
-                this.bgm.play();
-                this.log("[audio] action=play channel=bgm");
+            this.bgm.play();
+            // 裁剪开头：把播放头直接跳到 BGM_START_OFFSET_SEC，跳过文件前导静音/前奏，使音乐内容紧贴合十即时响起
+            const offUs = FoShouNamaste_1.BGM_START_OFFSET_SEC * 1e6;
+            try {
+                if (this.bgm.currentTime !== undefined)
+                    this.bgm.currentTime = offUs; // 微秒
+                else if (typeof this.bgm.seek === "function")
+                    this.bgm.seek(offUs);
+                else if (typeof this.bgm.setCurrentTime === "function")
+                    this.bgm.setCurrentTime(offUs);
             }
+            catch (e2) {
+                this.log("[audio] seek failed: " + e2);
+            }
+            this.bgmPlaying = true;
+            this.bgmElapsed = 0;
+            this.log("[audio] action=play channel=bgm offset=" + FoShouNamaste_1.BGM_START_OFFSET_SEC + "s");
         }
         catch (e) {
             this.log("[audio] play failed: " + e);
@@ -338,11 +455,33 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
             return;
         try {
             this.bgm.stop();
+            this.bgmPlaying = false;
             this.log("[audio] action=stop channel=bgm");
         }
         catch (e) {
             this.log("[audio] stop failed: " + e);
         }
+    }
+    /**
+     * 一次性播放保障：当 BGM 自身播放到结尾（isFinished），或自计时达到已知 BGM 时长，
+     * 立即 stop。即便场景 playMode 因故未生效为 Once（被回退成循环），也能在播完第一遍后停住，
+     * 避免出现「音频播完、音乐又从头续播」的循环尾音。自计时兜底不依赖 currentTime/duration 单位，
+     * 因此对任意 playMode 取值都有效。
+     */
+    stopBgmIfFinished() {
+        if (!this.bgm || !this.bgmPlaying)
+            return;
+        try {
+            const fin = this.bgm.isFinished;
+            if (typeof fin === "boolean" ? fin : (typeof fin === "function" ? fin() : false)) {
+                this.stopBgm();
+                return;
+            }
+        }
+        catch (e) { }
+        // 自计时兜底：按已知 BGM 时长（BGM_DURATION_SEC）播完第一遍即强制 stop，彻底杜绝循环续播。
+        if (this.bgmElapsed >= FoShouNamaste_1.BGM_DURATION_SEC)
+            this.stopBgm();
     }
     enterEnd() {
         this.state = FoShouNamaste_1.END;
@@ -351,16 +490,29 @@ let FoShouNamaste = FoShouNamaste_1 = class FoShouNamaste extends APJS.BasicScri
         this.show(this.imgWheel, false);
         this.show(this.imgFlash, false);
         this.show(this.imgSutra, false);
-        this.show(this.imgGuide, true);
-        this.show(this.imgBox, true);
+        this.show(this.imgGuide, false);
+        this.show(this.imgBox, false);
+        this.resetSutraRotation();
+        this.videoPending = false;
+        this.videoDelay = 0;
+        // 一次性播放：终态定格在最后画面（主片 + 头光 + 主标题），不再回到待机，
+        // 不响应再次合十重播。
+        this.show(this.imgMain, true);
+        this.alpha(this.imgMain, 1.0);
+        this.show(this.imgHalo, true);
+        this.show(this.imgTitle, true);
         this.show(this.imgCam, false);
-        this.log("state -> end (freeze, hint again, no camera)");
+        this.stopBgm();
+        this.log("state -> end (terminal freeze, one-shot done, no loop)");
     }
     // ---- 20 秒主片播放（Mp4TextureProvider）-------------------------------------
     restartFilm() {
         const img = this.imgMain;
         if (!img)
             return;
+        // 画面与视频同帧出现：延迟期间 imgMain 保持隐藏，开播瞬间才显示，保证声画对齐
+        this.show(this.imgMain, true);
+        this.alpha(this.imgMain, 1.0);
         let ctl = null;
         try {
             const tex = img.texture;
@@ -470,6 +622,31 @@ FoShouNamaste.END_HOLD = 3.5;
 FoShouNamaste.DURATION_TIMEOUT = 25.0;
 FoShouNamaste.IDLE_BG_OPACITY = 0.35;
 FoShouNamaste.HINT_CYCLE = 2.4;
+/**
+ * 经文隧道旋转角速度（rad/s）。整实体刚体旋转：漩涡贴图与其中烤入的金字作为同一对象一起转，
+ * 解决「漩涡在转、金字卡住不转」。约 1.1 rad/s ≈ 0.175 圈/秒；想更快改大此值。
+ */
+FoShouNamaste.SUTRA_SPIN = 1.1;
+/**
+ * 声画对齐：主片视频相对 BGM 延迟启动的秒数（= 音乐相对画面的提前量）。
+ * 像塑音频线程有启动延迟，若视频与音乐同帧 play，听起来「音乐延后」于画面。
+ * 设为 >0 让视频晚一点开（音乐相对提前），抵消延迟使第 0 帧对齐；
+ * 改完若发现音乐反而提前、画面显得慢，把这个值调小；
+ * 若仍觉得画面比音乐快（音乐偏后），继续调大（如 0.6~0.8）。当前主片 17s，延后量极小不影响时间轴。
+ */
+FoShouNamaste.BGM_LEAD_SEC = 0.6;
+/**
+ * 音乐开头裁剪量（秒）：play 后把播放头直接 seek 到该位置，跳过文件前导静音/前奏。
+ * 当前 bgm 由用户新给的 wav 转码而来（13.6s，无前导静音），故设为 0；
+ * 若换回带前 4s 静音的旧版 mp3，改回 4。单位：秒。主片 17s，BGM 较短；playMode 已设为 Once，播完即止、不再循环。
+ */
+FoShouNamaste.BGM_START_OFFSET_SEC = 0;
+/**
+ * BGM 单次时长（秒），用于代码层「硬停」兜底：即便场景 playMode 未生效为 Once（被回退成循环），
+ * 也按此时长在播完第一遍即强制 stop，杜绝循环续播。需与实际 bgm 文件时长保持一致；
+ * 当前 bgm_namaste.mp3 约 13.64s，取 13.7 留少许余量（换 BGM 文件时同步修改）。
+ */
+FoShouNamaste.BGM_DURATION_SEC = 13.7;
 FoShouNamaste.N_MAIN = "01_主片_20秒序列帧";
 FoShouNamaste.N_GUIDE = "02_引导文案_双手合十助佛首归来";
 FoShouNamaste.N_BOX = "03_合十手势引导框";

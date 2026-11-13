@@ -286,6 +286,77 @@
   },
   {
     "guid": {
+      "a": "bcc0f05b-967d-e815-de15-2dde79500f9a",
+      "b": ""
+    },
+    "objGuid": "Guid(4952911737173124979, 15712947092113525408)",
+    "extraType": "Entity",
+    "name": "BgmPlayer",
+    "version": "0.1.0",
+    "rttiType": "SceneObject",
+    "expanded": true,
+    "type": "none",
+    "isAnimatorBound": false,
+    "modelGUID": "",
+    "createdEffectNodeKey": "effect_node_music",
+    "disableSelection": false,
+    "hiddenInHierarchy": false,
+    "editorTags": [],
+    "entityPanel": "2D"
+  },
+  {
+    "guid": {
+      "a": "4e7cb2a5-ea3e-570e-0389-2665ddedc0c4",
+      "b": ""
+    },
+    "objGuid": "Guid(4840692485280106750, 10429361679689419172)",
+    "extraType": "Transform",
+    "name": "变换",
+    "version": "0.1.0",
+    "rttiType": "Transform",
+    "editable": true,
+    "_lazyUpgrateVersion": "0.0.0",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "expanded": false
+    },
+    "eulerAngle": [
+      0,
+      0,
+      0
+    ],
+    "linkage": 0
+  },
+  {
+    "guid": {
+      "a": "2f8308d6-5c68-249a-7c9d-f07bde6c5ca2",
+      "b": ""
+    },
+    "objGuid": "Guid(4872269230057775359, 11380376941514705583)",
+    "extraType": "AudioComponent",
+    "name": "音频播放器",
+    "version": "0.3.0",
+    "rttiType": "AudioComponent",
+    "editable": true,
+    "_lazyUpgrateVersion": "0.3.0",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "expanded": true
+    },
+    "audioRef": "9e1d1a25-5b41-ce1b-f320-c30299a7d24f",
+    "AudioEffectId": "",
+    "AudioEffectCategory": "",
+    "lyricsVolume": 100,
+    "lyricsEntityGuid": "",
+    "lyricsTemplateEntityGuid": "",
+    "subtitleEntityGuid": "",
+    "karaokeEntityGuid": "",
+    "styleResLokiId": "",
+    "prefabGuid": "",
+    "prefabInstanceGuid": ""
+  },
+  {
+    "guid": {
       "a": "c87d5ad2-a581-41a0-8718-b5caf7b6f223",
       "b": ""
     },
@@ -1384,250 +1455,6 @@
   },
   {
     "guid": {
-      "a": "c9caba83-7163-46fe-b3d7-7df6bfe491a4",
-      "b": ""
-    },
-    "objGuid": "Guid(17348037796329417779, 16460308900599517882)",
-    "extraType": "Entity",
-    "name": "08_结尾主标题_佛光金照殊胜圆满",
-    "version": "0.1.0",
-    "rttiType": "SceneObject",
-    "expanded": true,
-    "type": "none",
-    "isAnimatorBound": false,
-    "modelGUID": "",
-    "createdEffectNodeKey": "effect_node_2D_foreground",
-    "disableSelection": false,
-    "hiddenInHierarchy": false,
-    "editorTags": [],
-    "entityPanel": "2D"
-  },
-  {
-    "guid": {
-      "a": "c0759131-2bef-432b-852c-3ba3cbbb9157",
-      "b": ""
-    },
-    "objGuid": "Guid(15747734450420740455, 10070927578889150237)",
-    "extraType": "ScreenTransform",
-    "name": "2D 变换",
-    "version": "0.1.0",
-    "rttiType": "ScreenTransform",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.0.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": true
-    },
-    "horizontalConstraint": 2,
-    "verticalConstraint": 2,
-    "linkageScale": 0,
-    "linkageSize": 0
-  },
-  {
-    "guid": {
-      "a": "8fd7a0b4-1775-4423-83d6-715b359255d9",
-      "b": ""
-    },
-    "objGuid": "Guid(8353919798161541530, 17028493790364635974)",
-    "extraType": "Image",
-    "name": "图片",
-    "version": "0.1.0",
-    "rttiType": "Image",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.0.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": true
-    },
-    "sharedMaterial": "00000000-0000-0000-0000-000000000132",
-    "segBlendMode": "Normal_v2",
-    "segRadius": 0.5,
-    "segSoftness": 0.5,
-    "blendMode": "Normal",
-    "sizeMode": 0,
-    "isScreenImage": false,
-    "drawMode": "Normal",
-    "filledType": 0,
-    "startPoint": 0,
-    "filledRange": 1,
-    "ellipseX": 1,
-    "ellipseY": 1,
-    "alphaNOPM": true,
-    "greenScreen": false,
-    "arVideoChromaKey": false,
-    "greenKeyManualEnabled": true,
-    "greenKeyKeepShadow": true,
-    "greenKeyScreenColor": [
-      0,
-      1,
-      0,
-      1
-    ],
-    "greenKeyScreenMode": 0,
-    "greenKeyStrength": 1,
-    "greenKeyCoreStrength": 1,
-    "greenKeyCoreRadius": 1,
-    "greenKeyResidualThreshold": 0,
-    "greenKeyResidualSoftness": 1,
-    "greenKeyChromaThreshold": 0,
-    "greenKeyChromaSoftness": 1,
-    "greenKeyOpaqueCore": 0,
-    "greenKeyCoreColor": 0,
-    "greenKeyBlack": 0,
-    "greenKeyWhite": 1,
-    "greenKeyGamma": 1,
-    "greenKeyOpacity": 1,
-    "greenKeyShrink": 0,
-    "greenKeyFeather": 0,
-    "greenKeyRepair": 0,
-    "greenKeyNonScreen": 0,
-    "greenKeyOpaqueEdge": 0,
-    "greenKeyShoeNonScreen": 0,
-    "greenKeyShoeColor": 0,
-    "greenKeyDespill": 0,
-    "greenKeyFragmentCleanup": 0,
-    "greenKeyDespillStrength": 1,
-    "greenKeyFragmentAlpha": 1,
-    "greenKeyFragmentDark": 1,
-    "greenKeyTolerance": 1,
-    "greenKeyShadowStrength": 1,
-    "greenKeyShadowCap": 1,
-    "greenKeyShadowRadius": 1,
-    "greenKeyShadowThreshold": 0,
-    "greenKeyShadowSoftness": 1,
-    "greenKeyGroundOffset": 0,
-    "greenKeyGroundWidth": 1,
-    "greenKeyShadowExtend": 0,
-    "greenKeyShadowContinuous": 0,
-    "greenKeyExtendDistance": 1,
-    "greenKeyBoundaryWidth": 1,
-    "greenKeyScreenEstimate": 0,
-    "greenKeyView": 0
-  },
-  {
-    "guid": {
-      "a": "5df8f68b-e757-4eb1-8a88-1fc2fd958cfd",
-      "b": ""
-    },
-    "objGuid": "Guid(10931674450715991615, 7262299946539536514)",
-    "extraType": "Entity",
-    "name": "10_经文隧道叠加",
-    "version": "0.1.0",
-    "rttiType": "SceneObject",
-    "expanded": true,
-    "type": "none",
-    "isAnimatorBound": false,
-    "modelGUID": "",
-    "createdEffectNodeKey": "effect_node_2D_foreground",
-    "disableSelection": false,
-    "hiddenInHierarchy": false,
-    "editorTags": [],
-    "entityPanel": "2D"
-  },
-  {
-    "guid": {
-      "a": "0ba39964-c4ae-4632-85ed-3a3a64ed6499",
-      "b": ""
-    },
-    "objGuid": "Guid(15373542258422933130, 4408551287426946380)",
-    "extraType": "ScreenTransform",
-    "name": "2D 变换",
-    "version": "0.1.0",
-    "rttiType": "ScreenTransform",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.0.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": true
-    },
-    "horizontalConstraint": 2,
-    "verticalConstraint": 2,
-    "linkageScale": 0,
-    "linkageSize": 0
-  },
-  {
-    "guid": {
-      "a": "8f3dca2b-a321-4890-b23c-3de35918bd0d",
-      "b": ""
-    },
-    "objGuid": "Guid(3331974252295662263, 6101439591362555864)",
-    "extraType": "Image",
-    "name": "图片",
-    "version": "0.1.0",
-    "rttiType": "Image",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.0.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": true
-    },
-    "sharedMaterial": "00000000-0000-0000-0000-000000000132",
-    "segBlendMode": "Normal_v2",
-    "segRadius": 0.5,
-    "segSoftness": 0.5,
-    "blendMode": "Normal",
-    "sizeMode": 0,
-    "isScreenImage": false,
-    "drawMode": "Normal",
-    "filledType": 0,
-    "startPoint": 0,
-    "filledRange": 1,
-    "ellipseX": 1,
-    "ellipseY": 1,
-    "alphaNOPM": true,
-    "greenScreen": false,
-    "arVideoChromaKey": false,
-    "greenKeyManualEnabled": true,
-    "greenKeyKeepShadow": true,
-    "greenKeyScreenColor": [
-      0,
-      1,
-      0,
-      1
-    ],
-    "greenKeyScreenMode": 0,
-    "greenKeyStrength": 1,
-    "greenKeyCoreStrength": 1,
-    "greenKeyCoreRadius": 1,
-    "greenKeyResidualThreshold": 0,
-    "greenKeyResidualSoftness": 1,
-    "greenKeyChromaThreshold": 0,
-    "greenKeyChromaSoftness": 1,
-    "greenKeyOpaqueCore": 0,
-    "greenKeyCoreColor": 0,
-    "greenKeyBlack": 0,
-    "greenKeyWhite": 1,
-    "greenKeyGamma": 1,
-    "greenKeyOpacity": 1,
-    "greenKeyShrink": 0,
-    "greenKeyFeather": 0,
-    "greenKeyRepair": 0,
-    "greenKeyNonScreen": 0,
-    "greenKeyOpaqueEdge": 0,
-    "greenKeyShoeNonScreen": 0,
-    "greenKeyShoeColor": 0,
-    "greenKeyDespill": 0,
-    "greenKeyFragmentCleanup": 0,
-    "greenKeyDespillStrength": 1,
-    "greenKeyFragmentAlpha": 1,
-    "greenKeyFragmentDark": 1,
-    "greenKeyTolerance": 1,
-    "greenKeyShadowStrength": 1,
-    "greenKeyShadowCap": 1,
-    "greenKeyShadowRadius": 1,
-    "greenKeyShadowThreshold": 0,
-    "greenKeyShadowSoftness": 1,
-    "greenKeyGroundOffset": 0,
-    "greenKeyGroundWidth": 1,
-    "greenKeyShadowExtend": 0,
-    "greenKeyShadowContinuous": 0,
-    "greenKeyExtendDistance": 1,
-    "greenKeyBoundaryWidth": 1,
-    "greenKeyScreenEstimate": 0,
-    "greenKeyView": 0
-  },
-  {
-    "guid": {
       "a": "8181da58-ac53-46af-9563-aa8daa5d357a",
       "b": ""
     },
@@ -1876,76 +1703,5 @@
     "fov": 60,
     "cachedInputTexture": "00000000-0000-0000-0000-00000000004b",
     "isAnimatorBound": false
-  },
-  {
-    "guid": {
-      "a": "bcc0f05b-967d-e815-de15-2dde79500f9a",
-      "b": ""
-    },
-    "objGuid": "Guid(4952911737173124979, 15712947092113525408)",
-    "extraType": "Entity",
-    "name": "BgmPlayer",
-    "version": "0.1.0",
-    "rttiType": "SceneObject",
-    "expanded": true,
-    "type": "none",
-    "isAnimatorBound": false,
-    "modelGUID": "",
-    "createdEffectNodeKey": "effect_node_music",
-    "disableSelection": false,
-    "hiddenInHierarchy": false,
-    "editorTags": [],
-    "entityPanel": "2D"
-  },
-  {
-    "guid": {
-      "a": "4e7cb2a5-ea3e-570e-0389-2665ddedc0c4",
-      "b": ""
-    },
-    "objGuid": "Guid(4840692485280106750, 10429361679689419172)",
-    "extraType": "Transform",
-    "name": "变换",
-    "version": "0.1.0",
-    "rttiType": "Transform",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.0.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": false
-    },
-    "eulerAngle": [
-      0,
-      0,
-      0
-    ],
-    "linkage": 0
-  },
-  {
-    "guid": {
-      "a": "2f8308d6-5c68-249a-7c9d-f07bde6c5ca2",
-      "b": ""
-    },
-    "objGuid": "Guid(4872269230057775359, 11380376941514705583)",
-    "extraType": "AudioComponent",
-    "name": "音频播放器",
-    "version": "0.3.0",
-    "rttiType": "AudioComponent",
-    "editable": true,
-    "_lazyUpgrateVersion": "0.3.0",
-    "extendedInfo": {
-      "isVisibleInInspector": true,
-      "expanded": true
-    },
-    "audioRef": "9e1d1a25-5b41-ce1b-f320-c30299a7d24f",
-    "AudioEffectId": "",
-    "AudioEffectCategory": "",
-    "lyricsVolume": 100,
-    "lyricsEntityGuid": "",
-    "lyricsTemplateEntityGuid": "",
-    "subtitleEntityGuid": "",
-    "karaokeEntityGuid": "",
-    "styleResLokiId": "",
-    "prefabGuid": "",
-    "prefabInstanceGuid": ""
   }
 ]

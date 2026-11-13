@@ -1,0 +1,47 @@
+%YAML 1.1
+--- !TextureDelegate &1
+name: !<str> a5693608-6071-4a0d-85fb-e2fa684489c8 MP4 播放器
+guid: {a: 5247208478584028099, b: 9740460973931583621}
+serializedProperty:
+  __class: ScriptSerializedProperty
+  name: !<str> ""
+  guid: {a: 4934417475358260943, b: 5177545096570377604}
+  properties:
+    __class: Map
+    JSClassName: !<str> Mp4TextureProvider
+    loopCount: -1
+    videoAsset: {localId: 1, path: 00000000-0000-0000-0000-0000000000c9--00000000-0000-0000-0000-0000000000c9.video}
+width: 0
+height: 0
+depth: 0
+internalFormat:
+  __class: InternalFormat
+  value: RGBA8
+dataType:
+  __class: DataType
+  value: U8norm
+builtinType:
+  __class: BuiltInTextureType
+  value: NORAML
+enableMipmap: true
+filterMin:
+  __class: FilterMode
+  value: LINEAR
+filterMag:
+  __class: FilterMode
+  value: LINEAR
+filterMipmap:
+  __class: FilterMipmapMode
+  value: NONE
+wrapModeS:
+  __class: WrapMode
+  value: CLAMP
+wrapModeT:
+  __class: WrapMode
+  value: CLAMP
+wrapModeR:
+  __class: WrapMode
+  value: CLAMP
+maxAnisotropy: 1
+delegateData:
+  __class: Map

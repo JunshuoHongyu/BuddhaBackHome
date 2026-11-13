@@ -1,7 +1,7 @@
 [
   {
     "guid": {
-      "a": "6f40f606-0434-3bbd-23d7-dde597666e7f",
+      "a": "a89e800c-29b4-2bbc-e93d-85b7a37ca17f",
       "b": ""
     },
     "extraType": "ResItemMP4",
@@ -15,14 +15,14 @@
       "expandInPanel": false
     },
     "alphaBlend": false,
-    "videoFileMD5": "653e20605e56ff1942117a57e8f4fcf7",
-    "compressionType": 0,
+    "videoFileMD5": "d0a4452006cc1f1acc63dd4afd109e77",
+    "compressionType": 2,
     "compressQuality": 0,
-    "compressMaxResolution": 1024,
-    "allowHighResolution": false,
+    "compressMaxResolution": 8192,
+    "allowHighResolution": true,
     "forceH264Transcode": false,
     "objGuid": "",
-    "resourceFilePath": "C:/Users/ywx1551497/Downloads/xs_frames/Film_20s.mp4",
+    "resourceFilePath": "C:\\Users\\ywx1551497\\Downloads\\a5693608-6071-4a0d-85fb-e2fa684489c8.mp4",
     "references": []
   }
 ]
