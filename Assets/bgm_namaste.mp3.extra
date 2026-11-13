@@ -1,0 +1,22 @@
+[
+  {
+    "guid": {
+      "a": "9e1d1a25-5b41-ce1b-f320-c30299a7d24f",
+      "b": ""
+    },
+    "extraType": "ResItemMP3",
+    "name": "bgm_namaste",
+    "version": "0.1.0",
+    "rttiType": "AudioAsset",
+    "authorizationInfo": "",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "hideInPanel": false,
+      "expandInPanel": false
+    },
+    "mccState": "SUCCESS",
+    "objGuid": "",
+    "resourceFilePath": "C:/Users/ywx1551497/Downloads/xs_frames/bgm_namaste.mp3",
+    "references": []
+  }
+]

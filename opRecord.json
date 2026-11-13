@@ -1,0 +1,31 @@
+{
+  "projectId": "9f2c4a71-7b0e-4d63-8a15-6e3c0d2b91f4",
+  "isFromTemplate": false,
+  "templateId": "templateID_none",
+  "opMap": {
+    "AddEntity": {
+      "count": 75,
+      "seed": "euqyr9d5"
+    },
+    "RemoveEntity": {
+      "count": 55,
+      "seed": "rx6756be"
+    },
+    "PropertyChange": {
+      "count": 258,
+      "seed": "m0z4zg7v"
+    },
+    "SceneDefault": {
+      "count": 148,
+      "seed": "0mptjeiq"
+    },
+    "AddComponent": {
+      "count": 12,
+      "seed": "aiotcjd6"
+    },
+    "RemoveComponent": {
+      "count": 3,
+      "seed": "ze2uvg05"
+    }
+  }
+}

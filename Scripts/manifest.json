@@ -1,0 +1,224 @@
+{
+ "project": "响堂山·心诚合十佛首归来",
+ "engine": "像塑探索版 / 桌面版 (Pixel Effect 工程格式)",
+ "duration_seconds": 20.0,
+ "master_fps": 10,
+ "master_frames": 600,
+ "main_film": {
+  "type": "Mp4Texture / VideoAsset",
+  "video_asset": "Assets/Film_20s.mp4",
+  "video_guid": "6f40f606-0434-3bbd-23d7-dde597666e7f",
+  "texture_guid": "80767eae-fce6-f0f2-dd7d-78c64c1291e6",
+  "encoded_size_bytes": 671823,
+  "duration_seconds": 20.0,
+  "fps": 10,
+  "size": "360x640",
+  "loop_count": 1,
+  "note": "为满足 8MB 包体限制，200 张 360x640 序列帧已替换为同一批帧编码的 20 秒 MP4（编辑器转码 HEVC hvc1 671KB 进包，H.264 源 2.7MB 仅留作重编码素材不进包）。2026-11-13：开头 f5-f23 的单手引导图案已替换为双手合十线稿并重新编码；播放时 opacity 1.0 完全不透明覆盖整屏，同时隐藏 13 层人像，屏幕只展示本影片。"
+ },
+ "layers": [
+  {
+   "name": "01_主片_20秒序列帧",
+   "texture": "80767eae-fce6-f0f2-dd7d-78c64c1291e6",
+   "sortingOrder": 2,
+   "enabledDefault": false,
+   "note": "20 秒主片（MP4 视频纹理，360x640 / 10fps / 播放一次）；默认隐藏，检测到双手合十并保持 0.6s 后由 Assets/Scripts/FoShouNamaste.ts 启用、从头播放，以完全不透明（opacity 1.0 / Normal）覆盖整屏；播放期间 13 层人像隐藏，整屏只有该影片",
+   "opacity": 1.0
+  },
+  {
+   "name": "02_引导文案_双手合十助佛首归来",
+   "texture": "de96427f-a2b6-4867-ade3-30f7788007d8--de96427f-a2b6-4867-ade3-30f7788007d8.png",
+   "sortingOrder": 4,
+   "enabledDefault": true,
+   "note": "右侧竖排金字「双手合十 助佛首归来」；默认显示，用户未合十时全程常驻提示，只有触发特效后才收起"
+  },
+  {
+   "name": "03_合十手势引导框",
+   "texture": "0d41335f-14b7-44a5-bbd3-bc8132fdafb8--0d41335f-14b7-44a5-bbd3-bc8132fdafb8.png",
+   "sortingOrder": 5,
+   "enabledDefault": true,
+   "note": "底部金色合十手形线稿（无方框）；默认显示并做 2.4s 呼吸动画，持续提示用户做出双手合十；识别到合十时点亮 04 金轮作为识别中反馈"
+  },
+  {
+   "name": "04_识别金轮光爆",
+   "texture": "4027b51f-7a47-4de0-b96d-2d650af8d1ef--4027b51f-7a47-4de0-b96d-2d650af8d1ef.png",
+   "sortingOrder": 6,
+   "enabledDefault": false,
+   "note": "识别成功瞬间底部金轮"
+  },
+  {
+   "name": "05_四角星光",
+   "texture": "45adb4fa-9cd0-4998-ae1d-f7b11df4848d--45adb4fa-9cd0-4998-ae1d-f7b11df4848d.png",
+   "sortingOrder": 7,
+   "enabledDefault": true,
+   "note": "四角四芒星装饰，待机提示阶段常驻"
+  },
+  {
+   "name": "06_灵光乍现闪白",
+   "texture": "12e6679f-c0d8-4bc6-ae79-6cc51c4c289c--12e6679f-c0d8-4bc6-ae79-6cc51c4c289c.png",
+   "sortingOrder": 8,
+   "enabledDefault": false,
+   "note": "径向闪白"
+  },
+  {
+   "name": "07_佛首头光",
+   "texture": "5cc0f73f-499c-4af6-9ccf-fa07243930e3--5cc0f73f-499c-4af6-9ccf-fa07243930e3.png",
+   "sortingOrder": 9,
+   "enabledDefault": false,
+   "note": "结尾金色头光圆环"
+  },
+  {
+   "name": "08_结尾主标题_佛光金照殊胜圆满",
+   "texture": "e6575c25-6ccd-49c8-9cda-b1f6fa41baab--e6575c25-6ccd-49c8-9cda-b1f6fa41baab.png",
+   "sortingOrder": 10,
+   "enabledDefault": false,
+   "note": "结尾主题大字"
+  },
+  {
+   "name": "10_经文隧道叠加",
+   "texture": "a2426b19-135b-480e-b213-31838e28cdf9--a2426b19-135b-480e-b213-31838e28cdf9.png",
+   "sortingOrder": 12,
+   "enabledDefault": false,
+   "note": "经文粒子叠加素材"
+  },
+  {
+   "name": "11_静态背景_无头佛石窟",
+   "texture": "952ee0ce-e19f-4c40-a6aa-c8edcd1abb46--952ee0ce-e19f-4c40-a6aa-c8edcd1abb46.png",
+   "sortingOrder": 1,
+   "enabledDefault": true,
+   "note": "待机氛围背景，0.35 透明度铺在摄像头画面之上、人像抠像层之下（2026-11-13 由人像上方下移，避免半透明蒙住人像），触发后关闭",
+   "opacity": 0.35
+  },
+  {
+   "name": "12_刻经洞实景参考",
+   "texture": "1c2e2d0b-d5f8-412a-9649-04af50c4a6db--1c2e2d0b-d5f8-412a-9649-04af50c4a6db.png",
+   "sortingOrder": 0,
+   "enabledDefault": false,
+   "note": "立项书内嵌刻经洞实景照片"
+  },
+  {
+   "name": "13_人像抠像层",
+   "texture": "00000000-0000-0000-0000-000001544（内置帧捕获 FaceMaskOutput.oCaptureFrameJSA）",
+   "sortingOrder": 0,
+   "enabledDefault": true,
+   "note": "实心不透明人像：官方 Portrait Segmentation 生成，材质 + Portrait 分割纹理 + 相机帧捕获，opacity 1.0 / Normal；仅待机与重置后可见，双手合十触发特效的瞬间由脚本整体隐藏（屏幕不再出现摄像头人像），20s 影片播完并定格 3.5s 回到待机时才重新显示（曾用名「13_用户视频_前置摄像头全屏底图」，2026-11-13 已更名以免误导）",
+   "role": "实心人像抠像层",
+   "material": "Assets/分割材质 (1).omtl（官方 Default_Segmentation_Material）",
+   "segTex": "Assets/人像抠图纹理 (1).segTex（SegmentationTexture，segmentationType=Portrait）",
+   "renderOrder": "3（在 01 主片之上、02 引导文案之下）"
+  }
+ ],
+ "camera": {
+  "facing": "FRONT",
+  "auto_on_launch": true,
+  "reason": "摄像头由抖音/像塑宿主在用户选中特效时开启；特效只需引用引擎提供的相机输入纹理，不能由脚本「打开」摄像头",
+  "bindTo": "13_用户视频_前置摄像头全屏底图",
+  "texture": "share://input.texture",
+  "texture_guid": "00000000-0000-0000-0000-00000000004b",
+  "bind_note": "已在 Assets/main.scene 把 13 层 ImageRenderer.texture 改为官方内置相机输入纹理 share://input.texture，并在 main.scene.extra 的 Camera 上补齐 cachedInputTexture；无需再手动拖资源",
+  "script_api": "像塑没有 setCameraFacing / getCameraTexture / switchCamera 这类脚本 API；脚本只负责图层显隐与透明度，不负责开启摄像头",
+  "mirror": "由宿主相机纹理决定；如需镜像，勾选 13 层 ImageRenderer 的 flipX"
+ },
+ "gesture_tracker": {
+  "official_node": "Gesture Detection / 手势检测",
+  "official_node_guid": "67144819-16ad-b75d-18d3-0b965c0bafdb",
+  "official_node_inputs": {
+   "Detect": "Either",
+   "Gesture": "Touching Palms"
+  },
+  "gesture_enum": {
+   "new_runtime": "APJS.HandAction.Namaste",
+   "legacy_runtime": "Amaz.HandAction.NAMASTE",
+   "vision_api": "Hand.Result.action === 'Namaste'",
+   "zh": "双手合十 / 合掌"
+  },
+  "similar_gestures_accepted": [
+   "Beg",
+   "Pray"
+  ],
+  "algorithm_declaration": "Graph/graph.json 中的 Gesture Detection 节点声明 graphAlgorithms=2handGestureDetect，使工程启用双手手势算法；PC 预览用 Preview > Hand 模拟手势",
+  "result_api": [
+   "APJS.AlgorithmManager.getResult().getHandCount() / getHandInfo(i).action",
+   "Amaz.AmazingManager.getSingleton('Algorithm').getAEAlgorithmResult()"
+  ],
+  "keypoint_fallback": "算法分类不可用时，用两掌 21 点关键点判定：两腕 x 接近、中指尖位于腕上方且彼此靠近、位于画面中下部",
+  "hold_seconds": 0.6,
+  "lose_grace": 1.5,
+  "click_fallback": false,
+  "note": "严格模式：没合十绝不开始特效，点屏不能代替；已删除旧版臆造的「身体跟踪→手部跟踪→双手合十」库路径与 getAlgorithm/getDetector API"
+ },
+ "interaction": {
+  "controller_script": "Assets/Scripts/FoShouNamaste.ts",
+  "mount": "Assets/main.scene → 实体「2D 相机」→ DynamicComponent（className = 脚本资源 GUID 7557b4e7-c078-e83c-c23a-8bdf2b02795d）",
+  "launch_state": "IDLE：实心不透明人像（13 层 Portrait Segmentation）+ 02 引导文案 + 03 金色合十手形线稿 + 05 星光 + 0.35 透明石窟背景；01 主片与触发图层隐藏",
+  "waiting_behavior": "未合十时每帧保持提示常驻，03 手势金线 2.4s 呼吸；识别到合十时点亮 04 金轮作为「识别中」反馈",
+  "trigger": "双手合十持续 0.6s（带 0.4 倍迟滞，容忍识别抖动）→ 立即隐藏 13 层摄像头人像、收起提示，01 主片从头发播放 20s（opacity 1.0 完全不透明覆盖整屏），04/06/10/07/08 按时间轴出现；播放期间屏幕只有特效影片，不再显示实时人像",
+  "end_state": "20s 播放结束 → 定格特效画面 3.5s（02/03 提示复现）→ 自动回到 IDLE，恢复 13 层实时人像，可再次合十重播；触发一次后需先松手 0.4s 才会再次触发，避免手一直合十导致无限重播",
+  "strict_no_gesture_no_effect": true,
+  "debug_tap_fallback": "把 CFG.ALLOW_TAP_FALLBACK 改为 true 才能在无摄像头的联调环境用点屏触发；默认 false",
+  "tuning": "CFG/常量：HOLD_REQUIRED 触发时长 0.6s、END_HOLD 结尾定格 3.5s；手势丢失时 hold 以 0.4 倍速率回落；13 层显示开关由脚本在 IDLE/END 状态切换",
+  "background_music": {
+   "asset": "Assets/bgm_namaste.mp3（AudioAsset GUID 9e1d1a25-5b41-ce1b-f320-c30299a7d24f）",
+   "host": "场景实体「BgmPlayer」（GUID bcc0f05b-967d-e815-de15-2dde79500f9a，挂在「2D 相机」下，Audio Player 内置对象自动生成的 AudioComponent）",
+   "component": "AudioComponent（GUID 2f8308d6-5c68-249a-7c9d-f07bde6c5ca2）：playMode=INFINITE 循环、volume=70、autoPlay=false",
+   "trigger": "合十触发 startFilm() 末尾调 playBgm() → bgm.play()（以 isFinished 守卫，避免循环途中重播）；回待机 enterIdle() 末尾调 stopBgm() → bgm.stop()",
+   "binding": "脚本 bindAudio() 通过 host.getChild(\"BgmPlayer\").getComponent(\"AudioComponent\") 取组件缓存到 bgm 字段；组件缺失时置 null 并打日志，不影响主流程",
+   "copyright": "发布前须确认音频商用授权与抖音音乐版权合规"
+  }
+ },
+ "composite": {
+  "mode": "前置摄像头全屏底图 + 20 秒特效主片半透明叠加，形成同一合成画面",
+  "user_video_always_on": true,
+  "user_video_is_background": true,
+  "never_covers_buddha": true,
+  "buddha_subject_y_range": [
+   0.3,
+   0.7
+  ],
+  "end_freeze_keeps_user_video": true,
+  "export": "抖音拍摄端整屏录下：摄像头人像 + 佛首归来特效"
+ },
+ "ending_titles": {
+  "main": "佛光金照 / 殊胜圆满",
+  "source": "用户指定改字；结尾小字已移除，15.067–20.0s 定格沿用新封面帧",
+  "font_main": "STKAITI.TTF 190px 两行居中 / 金色渐变 + 描边 + 外发光",
+  "editable_layers": [
+   "08_结尾主标题_佛光金照殊胜圆满"
+  ]
+ },
+ "camera_fusion": {
+  "mode": "fullscreen_front_camera_alpha_blend",
+  "open_on_launch": true,
+  "note": "open_on_launch 指摄像头画面（宿主开启）打开即显示；20 秒特效本身要等双手合十才开始，见 interaction 段",
+  "camera_texture": "share://input.texture",
+  "camera_texture_guid": "00000000-0000-0000-0000-00000000004b",
+  "host_opens_camera": true,
+  "main_film_enabled_default": false,
+  "user_video_layer": "13_用户视频_前置摄像头全屏底图",
+  "user_video_sorting_order": 0,
+  "screen_transform": {
+   "anchoredPosition": {
+    "x": 0,
+    "y": 0
+   },
+   "sizeDelta": {
+    "x": 720,
+    "y": 1280
+   }
+  },
+  "camera_clear_type": "DEPTH",
+  "blend_principle": "2D 相机 clearType=DEPTH 只清深度不清颜色；01 主片 opacity=0.62 半透明叠加，摄像头人像从底层持续透出",
+  "main_film_opacity": 0.62,
+  "idle_background_opacity": 0.35,
+  "fusion_fade_seconds": 1.2,
+  "pure_film_mode": "把 01 层 opacity 调到 1.0（或关掉 13 层）即可回到纯视频模式",
+  "no_picture_in_picture": true,
+  "no_circle_mask": true,
+  "no_gold_frame": true
+ },
+ "gesture_guide": {
+  "texture": "Assets/纹理/Gesture_Box.png",
+  "pose": "双手合十（两掌相对、指尖朝上）",
+  "note": "2026-11-13 起，待机引导手势与主片开头统一为双手合十线稿；图案取自主片 f26-f32 的合十线稿，去掉方框与火焰杂线后描成金色透明贴图。原单手佛手印已从引导层、石窟背景和主片开头帧中移除。"
+ }
+}

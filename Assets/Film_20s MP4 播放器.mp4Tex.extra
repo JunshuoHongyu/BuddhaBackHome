@@ -1,0 +1,25 @@
+[
+  {
+    "guid": {
+      "a": "80767eae-fce6-f0f2-dd7d-78c64c1291e6",
+      "b": ""
+    },
+    "extraType": "ResItemMp4Texture",
+    "name": "Film_20s MP4 播放器",
+    "version": "0.1.0",
+    "rttiType": "Texture",
+    "authorizationInfo": "",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "hideInPanel": false,
+      "expandInPanel": false
+    },
+    "objGuid": "",
+    "references": [
+      {
+        "guid": "6f40f606-0434-3bbd-23d7-dde597666e7f",
+        "propertyName": "videoAsset"
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "guid": {
+      "a": "7557b4e7-c078-e83c-c23a-8bdf2b02795d",
+      "b": ""
+    },
+    "extraType": "ResItemJSScript",
+    "name": "FoShouNamaste",
+    "version": "0.1.0",
+    "authorizationInfo": "",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "hideInPanel": false,
+      "expandInPanel": false
+    },
+    "objGuid": "",
+    "resourceFilePath": "C:\\Users\\ywx1551497\\Downloads\\像塑工程\\Assets\\Scripts\\FoShouNamaste.ts",
+    "references": [],
+    "scriptAnnotation": [],
+    "needCompile": true,
+    "isUserScript": true
+  }
+]

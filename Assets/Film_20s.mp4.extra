@@ -1,0 +1,28 @@
+[
+  {
+    "guid": {
+      "a": "6f40f606-0434-3bbd-23d7-dde597666e7f",
+      "b": ""
+    },
+    "extraType": "ResItemMP4",
+    "name": "Film_20s",
+    "version": "0.1.0",
+    "rttiType": "VideoAsset",
+    "authorizationInfo": "",
+    "extendedInfo": {
+      "isVisibleInInspector": true,
+      "hideInPanel": false,
+      "expandInPanel": false
+    },
+    "alphaBlend": false,
+    "videoFileMD5": "653e20605e56ff1942117a57e8f4fcf7",
+    "compressionType": 0,
+    "compressQuality": 0,
+    "compressMaxResolution": 1024,
+    "allowHighResolution": false,
+    "forceH264Transcode": false,
+    "objGuid": "",
+    "resourceFilePath": "C:/Users/ywx1551497/Downloads/xs_frames/Film_20s.mp4",
+    "references": []
+  }
+]

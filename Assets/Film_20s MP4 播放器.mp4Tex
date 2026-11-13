@@ -1,0 +1,47 @@
+%YAML 1.1
+--- !TextureDelegate &1
+name: !<str> Film_20s MP4 播放器
+guid: {a: 4936730479615826145, b: 240135228811539633}
+serializedProperty:
+  __class: ScriptSerializedProperty
+  name: !<str> ""
+  guid: {a: 4679257992245494099, b: 1860901225875487677}
+  properties:
+    __class: Map
+    JSClassName: !<str> Mp4TextureProvider
+    loopCount: 1
+    videoAsset: {localId: 1, path: 6f40f606-0434-3bbd-23d7-dde597666e7f--6f40f606-0434-3bbd-23d7-dde597666e7f.video}
+width: 0
+height: 0
+depth: 0
+internalFormat:
+  __class: InternalFormat
+  value: RGBA8
+dataType:
+  __class: DataType
+  value: U8norm
+builtinType:
+  __class: BuiltInTextureType
+  value: NORAML
+enableMipmap: true
+filterMin:
+  __class: FilterMode
+  value: LINEAR
+filterMag:
+  __class: FilterMode
+  value: LINEAR
+filterMipmap:
+  __class: FilterMipmapMode
+  value: NONE
+wrapModeS:
+  __class: WrapMode
+  value: CLAMP
+wrapModeT:
+  __class: WrapMode
+  value: CLAMP
+wrapModeR:
+  __class: WrapMode
+  value: CLAMP
+maxAnisotropy: 1
+delegateData:
+  __class: Map
